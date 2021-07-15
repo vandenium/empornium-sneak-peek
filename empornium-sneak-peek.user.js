@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.0
+// @version     1.0.1
 // @author      vandenium
 // @grant       none
 
@@ -19,11 +19,13 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.0.1
+//  - Fix Brave issue.
 // Version 1.0.0
-//   - The initial version.
+//  - The initial version.
 // Todo:
-//    - Fix requests.
-//    - Fix Top 10 image link
+//  - Fix requests.
+//  - Fix Top 10 image link
 
 (function() {
 
@@ -47,7 +49,8 @@ const run = () => {
     if (imgNode) {
         imgSrc = imgNode.src;
     } else {
-        const script = scripts[i];
+        const index = !!window.navigator.brave ? i + 1 : i; // if Brave, need to shift by 1.
+        const script = scripts[index];
         const regex = /src=(\\".*\\")/g;
         const rawSrc = script.firstChild.textContent.match(regex)[0];
         imgSrc = rawSrc.replace(/\\\//g, "/").replace(/\\/g, '').split('src=')[1].replace(/\"/g, '');
