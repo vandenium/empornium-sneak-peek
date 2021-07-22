@@ -2,15 +2,19 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.1.0
+// @version     1.2.0
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/top10.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/requests.php*/
+// @include /^https://www\.empornium\.(me|sx|is)\/notifications.php*/
 // ==/UserScript==
 
 // Changelog:
+// Version 1.2.0
+//  - Bugfix: Fix broken Download Torrent link on Notifications page.
+//  - Enable for Notifications page.
 // Version 1.1.0
 //  - Update @match/@include, now works for requests page.
 //  - Simplify img src parse.
@@ -28,7 +32,8 @@
 
   const run = () => {
     const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
-    const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])')).filter(scriptEl => scriptEl.firstChild.textContent.includes('var overlay'));
+    const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
+      .filter(scriptEl => scriptEl.firstChild.textContent.includes('var overlay'));
 
     titles.forEach((title, i) => {
       const titleImg = title.querySelector('img');
@@ -53,7 +58,11 @@
       if (imgSrc !== '') {
         titleImg.src = imgSrc;
         titleImg.width = 150;
-        titleImageLink.href = titleLinkAnchor.href;
+        // Link image to torrent on the torrents page
+        if (window.location.pathname.includes('torrents')) {
+          titleImageLink.href = titleLinkAnchor.href;
+        }
+        
       }
     })
   }
