@@ -12,6 +12,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.2.1
+//  - Bugfix: Fix same issue as in 1.2.0 for Top 10 page.
 // Version 1.2.0
 //  - Bugfix: Fix broken Download Torrent link on Notifications page.
 //  - Enable for Notifications page.
@@ -59,7 +61,7 @@
         titleImg.src = imgSrc;
         titleImg.width = 150;
         // Link image to torrent on the torrents page
-        if (window.location.pathname.includes('torrents')) {
+        if (!window.location.href.includes('notify') && !window.location.href.includes('top10')) {
           titleImageLink.href = titleLinkAnchor.href;
         }
         
