@@ -54,7 +54,7 @@
         const script = scripts[i];
         const regex = /src=(\\".*\\")/g;
         const rawSrc = script.firstChild.textContent.match(regex)[0];
-        imgSrc = rawSrc.split('=')[1].replace(/\\"/g, '');
+        imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
       }
 
       if (imgSrc !== '') {
