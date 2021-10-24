@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.2.0
+// @version     1.2.2
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -12,6 +12,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.2.2
+//  - Bugfix: Fix the cleanup of the img src URL.
 // Version 1.2.1
 //  - Bugfix: Fix same issue as in 1.2.0 for Top 10 page.
 // Version 1.2.0
@@ -54,7 +56,7 @@
         const script = scripts[i];
         const regex = /src=(\\".*\\")/g;
         const rawSrc = script.firstChild.textContent.match(regex)[0];
-        imgSrc = rawSrc.split('=')[1].replace(/\\"/g, '');
+        imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
       }
 
       if (imgSrc !== '') {
