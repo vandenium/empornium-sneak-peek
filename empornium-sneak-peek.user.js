@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.2.0
+// @version     1.2.2
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -12,6 +12,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.2.2
+//  - Bugfix: Fix the cleanup of the img src URL.
 // Version 1.2.1
 //  - Bugfix: Fix same issue as in 1.2.0 for Top 10 page.
 // Version 1.2.0
