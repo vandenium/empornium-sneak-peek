@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.2.2
+// @version     1.2.3
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -12,6 +12,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.2.3
+//  - Bugfix: Making the image a bit wider (150px -> 250px).
 // Version 1.2.2
 //  - Bugfix: Fix the cleanup of the img src URL.
 // Version 1.2.1
@@ -61,7 +63,7 @@
 
       if (imgSrc !== '') {
         titleImg.src = imgSrc;
-        titleImg.width = 150;
+        titleImg.width = 250;
         // Link image to torrent on the torrents page
         if (!window.location.href.includes('notify') && !window.location.href.includes('top10')) {
           titleImageLink.href = titleLinkAnchor.href;
