@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.2.3
+// @version     1.3.0
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -12,8 +12,8 @@
 // ==/UserScript==
 
 // Changelog:
-// Version 1.2.3
-//  - Bugfix: Making the image a bit wider (150px -> 250px).
+// Version 1.3.0
+//  - Bugfix: Now works with Modern Dark theme.
 // Version 1.2.2
 //  - Bugfix: Fix the cleanup of the img src URL.
 // Version 1.2.1
@@ -33,44 +33,70 @@
 // Todo:
 
 (function () {
-
-  console.log('ESP Starting...');
+  const modernDarkThemeRunning = () => !!document.querySelector('table div.cover');
 
   const run = () => {
-    const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
-    const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
+    // If modern dark theme running, replace div with background image with lazy-loaded image.
+    if (modernDarkThemeRunning()) {
+      const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
+
+      Array.from(document.querySelectorAll('div.cover')).forEach(el => el.style.display = 'none');
+
+      titles.forEach( (title, i) => {
+        title.querySelector('a.category_label').style.width = '99%';
+        const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+        const imgDiv = title.querySelector('div.cover');
+        const imgDivParent = imgDiv.parentNode;
+        const imgArray = imgDiv.style.backgroundImage.match(urlRegex);
+        const imgUrl = imgArray[0];
+       
+        // create image
+        const titleImg = document.createElement('img');
+        titleImg.src = imgUrl;
+        titleImg.width = 250;
+        titleImg.loading = 'lazy';
+
+        // Replace div with lazy-loaded image.
+        imgDiv.remove();
+        imgDivParent.append(titleImg);
+      });
+    } else {
+
+      const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
+      const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
       .filter(scriptEl => scriptEl.firstChild.textContent.includes('var overlay'));
 
-    titles.forEach((title, i) => {
-      const titleImg = title.querySelector('img');
-      titleImg.loading = 'lazy';
+      titles.forEach((title, i) => {
+        const titleImg = title.querySelector('img');
+        titleImg.loading = 'lazy';
 
-      const anchors = title.querySelectorAll('a');
-      const titleLinkAnchor = anchors[2];
-      const titleImageLink = anchors[0];
+        const anchors = title.querySelectorAll('a');
+        const titleLinkAnchor = anchors[2];
+        const titleImageLink = anchors[0];
 
-      const imgNode = document.querySelector('.leftOverlay img')
-      let imgSrc;
+        const imgNode = document.querySelector('.leftOverlay img')
+        let imgSrc;
 
-      if (imgNode) {
-        imgSrc = imgNode.src;
-      } else {
-        const script = scripts[i];
-        const regex = /src=(\\".*\\")/g;
-        const rawSrc = script.firstChild.textContent.match(regex)[0];
-        imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
-      }
-
-      if (imgSrc !== '') {
-        titleImg.src = imgSrc;
-        titleImg.width = 250;
-        // Link image to torrent on the torrents page
-        if (!window.location.href.includes('notify') && !window.location.href.includes('top10')) {
-          titleImageLink.href = titleLinkAnchor.href;
+        if (imgNode) {
+          imgSrc = imgNode.src;
+        } else {
+          const script = scripts[i];
+          const regex = /src=(\\".*\\")/g;
+          const rawSrc = script.firstChild.textContent.match(regex)[0];
+          imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
         }
-        
-      }
-    })
+
+        if (imgSrc !== '') {
+          titleImg.src = imgSrc;
+          titleImg.width = 250;
+          // Link image to torrent on the torrents page
+          if (!window.location.href.includes('notify') && !window.location.href.includes('top10')) {
+            titleImageLink.href = titleLinkAnchor.href;
+          }
+
+        }
+      })
+    }
   }
 
   run();
