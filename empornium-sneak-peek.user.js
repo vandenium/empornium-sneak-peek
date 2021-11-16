@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.3.0
+// @version     1.3.1
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -12,6 +12,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.3.1
+//  - Bugfix: Fixed issue of images not displaying when hitting uncaught error.
 // Version 1.3.0
 //  - Bugfix: Now works with Modern Dark theme.
 // Version 1.2.2
@@ -33,32 +35,34 @@
 // Todo:
 
 (function () {
+  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
   const modernDarkThemeRunning = () => !!document.querySelector('table div.cover');
 
   const run = () => {
     // If modern dark theme running, replace div with background image with lazy-loaded image.
     if (modernDarkThemeRunning()) {
       const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
-
       Array.from(document.querySelectorAll('div.cover')).forEach(el => el.style.display = 'none');
 
       titles.forEach( (title, i) => {
         title.querySelector('a.category_label').style.width = '99%';
-        const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+
         const imgDiv = title.querySelector('div.cover');
         const imgDivParent = imgDiv.parentNode;
         const imgArray = imgDiv.style.backgroundImage.match(urlRegex);
-        const imgUrl = imgArray[0];
-       
-        // create image
-        const titleImg = document.createElement('img');
-        titleImg.src = imgUrl;
-        titleImg.width = 250;
-        titleImg.loading = 'lazy';
 
-        // Replace div with lazy-loaded image.
-        imgDiv.remove();
-        imgDivParent.append(titleImg);
+        if (imgArray) {
+          const imgUrl = imgArray[0];
+          // create image
+          const titleImg = document.createElement('img');
+          titleImg.src = imgUrl;
+          titleImg.width = 250;
+          titleImg.loading = 'lazy';
+
+          // Replace div with lazy-loaded image.
+          imgDiv.remove();
+          imgDivParent.append(titleImg);
+        }
       });
     } else {
 
