@@ -24,7 +24,7 @@
 
 // Changelog:
 // Version 1.4.0
-//  - Bugfix: Fix regex for pornbay.
+//  - Bugfix: Fix regex for pornbay and homeporntorrents.
 // Version 1.3.2
 //  - Enabling on Collage pages and other compatible sites.
 // Version 1.3.1
@@ -99,7 +99,7 @@
           imgSrc = imgNode.src;
         } else {
           const script = scripts[i];
-          const regex = window.location.href.includes('pornbay') ? /src=(.*?)(.=>)/ : /src=(\\".*\\")/g;
+          const regex = window.location.href.search(/pornbay|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
           const rawSrc = script.firstChild.textContent.match(regex)[0];
           imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
         }
