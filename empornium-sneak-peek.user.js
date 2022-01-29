@@ -2,16 +2,29 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.3.1
+// @version     1.3.2
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/top10.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/requests.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/notifications.php*/
+// @include /^https://www\.empornium\.(me|sx|is)/collages\.php\?id.*/
+// @include /^https://pornbay\.org/collages\.php\?id.*/
+// @include /^https://pornbay\.org/torrents\.php.*/
+// @include /^https://pornbay\.org/top10\.php.*/
+// @include /^https://www.happyfappy\.org/collages\.php\?id.*/
+// @include /^https://www.happyfappy\.org/torrents\.php.*/
+// @include /^https://www.happyfappy\.org/top10\.php.*/
+// @include /^https://www.homeporntorrents\.club/collages\.php\?id.*/
+// @include /^https://www.homeporntorrents\.club/torrents\.php.*/
+// @include /^https://www.homeporntorrents\.club/top10\.php.*/
+
 // ==/UserScript==
 
 // Changelog:
+// Version 1.3.2
+//  - Enabling on Collage pages and other compatible sites.
 // Version 1.3.1
 //  - Bugfix: Fixed issue of images not displaying when hitting uncaught error.
 // Version 1.3.0
@@ -42,9 +55,9 @@
     // If modern dark theme running, replace div with background image with lazy-loaded image.
     if (modernDarkThemeRunning()) {
       const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
-      Array.from(document.querySelectorAll('div.cover')).forEach(el => el.style.display = 'none');
+      Array.from(document.querySelectorAll('div.cover')).forEach((el) => el.style.display = 'none');
 
-      titles.forEach( (title, i) => {
+      titles.forEach((title, i) => {
         title.querySelector('a.category_label').style.width = '99%';
 
         const imgDiv = title.querySelector('div.cover');
@@ -65,10 +78,9 @@
         }
       });
     } else {
-
       const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
       const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
-      .filter(scriptEl => scriptEl.firstChild.textContent.includes('var overlay'));
+        .filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
 
       titles.forEach((title, i) => {
         const titleImg = title.querySelector('img');
@@ -78,7 +90,7 @@
         const titleLinkAnchor = anchors[2];
         const titleImageLink = anchors[0];
 
-        const imgNode = document.querySelector('.leftOverlay img')
+        const imgNode = document.querySelector('.leftOverlay img');
         let imgSrc;
 
         if (imgNode) {
@@ -97,11 +109,10 @@
           if (!window.location.href.includes('notify') && !window.location.href.includes('top10')) {
             titleImageLink.href = titleLinkAnchor.href;
           }
-
         }
-      })
+      });
     }
-  }
+  };
 
   run();
-})();
+}());
