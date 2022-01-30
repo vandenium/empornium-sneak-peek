@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.0
+// @version     1.4.1
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -26,6 +26,9 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.4.1
+//  - Bugfix: Fix requests page link to torrent, not category.
+//  - Bugfix: On PB, ensure the overlay exists.
 // Version 1.4.0
 //  - Bugfix: Fix regex for pornbay and homeporntorrents. Add requests URLs.
 // Version 1.3.2
@@ -52,7 +55,9 @@
 //  - The initial version.
 // Todo:
 
-(function () {
+(function main() {
+  const TITLE_IMAGE_WIDTH = 250; // In pixels. Update this to set your preferred image size.
+
   const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
   const modernDarkThemeRunning = () => !!document.querySelector('table div.cover');
 
@@ -62,7 +67,7 @@
       const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
       Array.from(document.querySelectorAll('div.cover')).forEach((el) => el.style.display = 'none');
 
-      titles.forEach((title, i) => {
+      titles.forEach((title) => {
         title.querySelector('a.category_label').style.width = '99%';
 
         const imgDiv = title.querySelector('div.cover');
@@ -74,7 +79,7 @@
           // create image
           const titleImg = document.createElement('img');
           titleImg.src = imgUrl;
-          titleImg.width = 250;
+          titleImg.width = TITLE_IMAGE_WIDTH;
           titleImg.loading = 'lazy';
 
           // Replace div with lazy-loaded image.
@@ -92,7 +97,8 @@
         titleImg.loading = 'lazy';
 
         const anchors = title.querySelectorAll('a');
-        const titleLinkAnchor = anchors[2];
+
+        const titleLinkAnchor = window.location.href.search(/requests/) > -1 ? anchors[1] : anchors[2];
         const titleImageLink = anchors[0];
 
         const imgNode = document.querySelector('.leftOverlay img');
@@ -107,7 +113,7 @@
           imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
         }
 
-        if (imgSrc !== '') {
+        if (imgSrc) {
           titleImg.src = imgSrc;
           titleImg.width = 250;
           // Link image to torrent on the torrents page
