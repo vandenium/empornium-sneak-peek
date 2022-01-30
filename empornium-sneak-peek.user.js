@@ -13,18 +13,21 @@
 // @include /^https://pornbay\.org/collages\.php\?id.*/
 // @include /^https://pornbay\.org/torrents\.php.*/
 // @include /^https://pornbay\.org/top10\.php.*/
+// @include /^https://pornbay\.org/requests\.php.*/
 // @include /^https://www.happyfappy\.org/collages\.php\?id.*/
 // @include /^https://www.happyfappy\.org/torrents\.php.*/
 // @include /^https://www.happyfappy\.org/top10\.php.*/
+// @include /^https://www.happyfappy\.org/requests\.php.*/
 // @include /^https://www.homeporntorrents\.club/collages\.php\?id.*/
 // @include /^https://www.homeporntorrents\.club/torrents\.php.*/
 // @include /^https://www.homeporntorrents\.club/top10\.php.*/
+// @include /^https://www.homeporntorrents\.club/requests\.php.*/
 
 // ==/UserScript==
 
 // Changelog:
 // Version 1.4.0
-//  - Bugfix: Fix regex for pornbay and homeporntorrents.
+//  - Bugfix: Fix regex for pornbay and homeporntorrents. Add requests URLs.
 // Version 1.3.2
 //  - Enabling on Collage pages and other compatible sites.
 // Version 1.3.1
