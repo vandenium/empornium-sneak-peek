@@ -108,11 +108,12 @@
           imgSrc = imgNode.src;
         } else {
           const script = scripts[i];
-          const regex = window.location.href.search(/pornbay|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
-          const rawSrc = script.firstChild.textContent.match(regex)[0];
-          imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
+          if (script) {
+            const regex = window.location.href.search(/pornbay|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
+            const rawSrc = script.firstChild.textContent.match(regex)[0];
+            imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
+          }
         }
-
         if (imgSrc) {
           titleImg.src = imgSrc;
           titleImg.width = 250;
