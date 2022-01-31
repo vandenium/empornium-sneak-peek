@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.1
+// @version     1.4.2
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -27,7 +27,7 @@
 
 // Changelog:
 // Version 1.4.1
-//  - Bugfix: Fix requests page link to torrent, not category.
+//  - Bugfix: Fix requests page link to request, not category.
 //  - Bugfix: On PB, ensure the overlay exists.
 // Version 1.4.0
 //  - Bugfix: Fix regex for pornbay and homeporntorrents. Add requests URLs.
@@ -65,7 +65,7 @@
     // If modern dark theme running, replace div with background image with lazy-loaded image.
     if (modernDarkThemeRunning()) {
       const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
-      Array.from(document.querySelectorAll('div.cover')).forEach((el) => el.style.display = 'none');
+      Array.from(document.querySelectorAll('div.cover')).forEach((el) => (el.style.display = 'none'));
 
       titles.forEach((title) => {
         title.querySelector('a.category_label').style.width = '99%';
@@ -89,17 +89,16 @@
       });
     } else {
       const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
-      const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
-        .filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
+      const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])')).filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
 
       titles.forEach((title, i) => {
         const titleImg = title.querySelector('img');
         titleImg.loading = 'lazy';
 
-        const anchors = title.querySelectorAll('a');
-
-        const titleLinkAnchor = window.location.href.search(/requests/) > -1 ? anchors[1] : anchors[2];
-        const titleImageLink = anchors[0];
+        const anchors = window.location.href.search(/requests/) > -1
+          ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
+          : title.querySelectorAll('a[href*="torrents.php?id="]');
+        const titleLinkAnchor = anchors[0];
 
         const imgNode = document.querySelector('.leftOverlay img');
         let imgSrc;
@@ -111,16 +110,30 @@
           if (script) {
             const regex = window.location.href.search(/pornbay|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
             const rawSrc = script.firstChild.textContent.match(regex)[0];
-            imgSrc = rawSrc.substring(rawSrc.indexOf('=') + 1).replace(/\\"/g, '').replaceAll('\\/', '/');
+            imgSrc = rawSrc
+              .substring(rawSrc.indexOf('=') + 1)
+              .replace(/\\"/g, '')
+              .replaceAll('\\/', '/');
           }
         }
+
         if (imgSrc) {
           titleImg.src = imgSrc;
           titleImg.width = 250;
           // Link image to torrent on the torrents page
-          if (!window.location.href.includes('notify') && !window.location.href.includes('top10')) {
-            if (typeof titleLinkAnchor !== 'undefined') {
-              titleImageLink.href = titleLinkAnchor.href;
+          if (!window.location.href.includes('notify')) {
+            if (
+              titleImg.parentElement.nodeName.toLowerCase() !== 'a'
+              && (typeof titleLinkAnchor).toLowerCase() === 'object'
+              && titleLinkAnchor.href !== undefined
+            ) {
+              // The Image doesn't have an <a>
+              const linkElem = document.createElement('a');
+              linkElem.setAttribute('href', titleLinkAnchor.href);
+              titleImg.parentNode.replaceChild(linkElem, titleImg);
+              linkElem.appendChild(titleImg);
+            } else if ((typeof titleLinkAnchor).toLowerCase() === 'object' && titleLinkAnchor.href !== undefined) {
+              titleImg.parentNode.setAttribute('href', titleLinkAnchor.href);
             }
           }
         }
