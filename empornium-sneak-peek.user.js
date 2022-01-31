@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.2
+// @version     1.4.1
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -29,6 +29,7 @@
 // Version 1.4.1
 //  - Bugfix: Fix requests page link to request, not category.
 //  - Bugfix: On PB, ensure the overlay exists.
+//  - Bugfix: Fix links on Collages and Top 10.
 // Version 1.4.0
 //  - Bugfix: Fix regex for pornbay and homeporntorrents. Add requests URLs.
 // Version 1.3.2
