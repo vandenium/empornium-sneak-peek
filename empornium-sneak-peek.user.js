@@ -2,14 +2,14 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.1
+// @version     1.4.2
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/top10.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/requests.php*/
 // @include /^https://www\.empornium\.(me|sx|is)\/notifications.php*/
-// @include /^https://www\.empornium\.(me|sx|is)/collages\.php\?id.*/
+// @include /^https://www\.empornium\.(me|sx|is)/collages\.php\?(id|page)=.*/
 // @include /^https://pornbay\.org/collages\.php\?id.*/
 // @include /^https://pornbay\.org/torrents\.php.*/
 // @include /^https://pornbay\.org/top10\.php.*/
@@ -26,6 +26,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.4.2
+//  - Bugfix: Fix issue of not displaying image on collage pages > 1.
 // Version 1.4.1
 //  - Bugfix: Fix requests page link to request, not category.
 //  - Bugfix: On PB, ensure the overlay exists.
