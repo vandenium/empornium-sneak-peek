@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.3
+// @version     1.4.4
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
@@ -26,6 +26,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.4.4
+//  - Bugfix: Remove hardcoded image width of 250px, update to respect TITLE_IMAGE_WIDTH contant.
 // Version 1.4.3
 //  - Bugfix: Fix issue of not working on collage pages when updating sorting order.
 // Version 1.4.2
@@ -124,7 +126,7 @@
 
         if (imgSrc) {
           titleImg.src = imgSrc;
-          titleImg.width = 250;
+          titleImg.width = TITLE_IMAGE_WIDTH;
           // Link image to torrent on the torrents page
           if (!window.location.href.includes('notify')) {
             if (
