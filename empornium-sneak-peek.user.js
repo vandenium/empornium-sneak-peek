@@ -100,7 +100,7 @@
           const titleImg = document.createElement('img');
           titleImg.src = imgUrl;
           titleImg.width = TITLE_IMAGE_WIDTH;
-          titleImg.loading = LAZY_LOAD ? "lazy" : "eager";
+          titleImg.loading = LAZY_LOAD ? 'lazy' : 'eager';
 
           // Replace div with lazy-loaded image.
           imgDiv.remove();
@@ -113,7 +113,7 @@
 
       titles.forEach((title, i) => {
         const titleImg = title.querySelector('img');
-        titleImg.loading = LAZY_LOAD ? "lazy" : "eager";
+        titleImg.loading = LAZY_LOAD ? 'lazy' : 'eager';
 
         const anchors = window.location.href.search(/requests/) > -1
           ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
