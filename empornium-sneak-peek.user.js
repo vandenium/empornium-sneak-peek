@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.4
+// @version     1.4.5
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)/torrents.php*/
@@ -35,11 +35,13 @@
 // ==/UserScript==
 
 // Changelog:
-// Version 1.4.4
+// Version 1.4.5
 //  - Bugfix: Fix issue with parsing image links
 //  - Add enthralled.me
 //  - Add @exclude rules
 //  - Add LAZY_LOAD to switch lazy loading ON/OFF
+// Version 1.4.4
+//  - Remove hardcoded image width of 250px, update to respect TITLE_IMAGE_WIDTH contant.
 // Version 1.4.3
 //  - Bugfix: Fix issue of not working on collage pages when updating sorting order.
 // Version 1.4.2
@@ -125,7 +127,6 @@
 
         if (imgNode) {
           imgSrc = imgNode.src;
-          
         } else {
           const script = scripts[i];
           if (script) {
