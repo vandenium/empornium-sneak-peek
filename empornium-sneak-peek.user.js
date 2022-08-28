@@ -2,30 +2,44 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.3
+// @version     1.4.4
 // @author      vandenium
 // @grant       none
-// @include /^https://www\.empornium\.(me|sx|is)\/torrents.php*/
-// @include /^https://www\.empornium\.(me|sx|is)\/top10.php*/
-// @include /^https://www\.empornium\.(me|sx|is)\/requests.php*/
-// @include /^https://www\.empornium\.(me|sx|is)\/notifications.php*/
+// @include /^https://www\.empornium\.(me|sx|is)/torrents.php*/
+// @exclude /^https://www\.empornium\.(me|sx|is)/torrents\.php\?id.*/
+// @include /^https://www\.empornium\.(me|sx|is)/top10.php*/
 // @include /^https://www\.empornium\.(me|sx|is)/collages\.php\?.*/
-// @include /^https://pornbay\.org/collages\.php\?.*/
+// @include /^https://www\.empornium\.(me|sx|is)/requests.php*/
+// @include /^https://www\.empornium\.(me|sx|is)/notifications.php*/
+// @include /^https://www\.enthralled\.me/torrents.php*/
+// @exclude /^https://www\.enthralled\.me/torrents\.php\?id.*/
+// @include /^https://www\.enthralled\.me/top10.php*/
+// @include /^https://www\.enthralled\.me/collages\.php\?.*/
+// @include /^https://www\.enthralled\.me/requests.php*/
+// @include /^https://www\.enthralled\.me/notifications.php*/
 // @include /^https://pornbay\.org/torrents\.php.*/
+// @exclude /^https://pornbay\.org/torrents\.php\?id.*/
 // @include /^https://pornbay\.org/top10\.php.*/
+// @include /^https://pornbay\.org/collages\.php\?.*/
 // @include /^https://pornbay\.org/requests\.php.*/
-// @include /^https://www.happyfappy\.org/collages\.php\?.*/
 // @include /^https://www.happyfappy\.org/torrents\.php.*/
+// @exclude /^https://www.happyfappy\.org/torrents\.php\?id.*/
 // @include /^https://www.happyfappy\.org/top10\.php.*/
+// @include /^https://www.happyfappy\.org/collages\.php\?.*/
 // @include /^https://www.happyfappy\.org/requests\.php.*/
-// @include /^https://www.homeporntorrents\.club/collages\.php\?.*/
 // @include /^https://www.homeporntorrents\.club/torrents\.php.*/
+// @exclude /^https://www.homeporntorrents\.club/torrents\.php\?id.*/
 // @include /^https://www.homeporntorrents\.club/top10\.php.*/
+// @include /^https://www.homeporntorrents\.club/collages\.php\?.*/
 // @include /^https://www.homeporntorrents\.club/requests\.php.*/
-
 // ==/UserScript==
 
 // Changelog:
+// Version 1.4.4
+//  - Bugfix: Fix issue with parsing image links
+//  - Add enthralled.me
+//  - Add @exclude rules
+//  - Add LAZY_LOAD to switch lazy loading ON/OFF
 // Version 1.4.3
 //  - Bugfix: Fix issue of not working on collage pages when updating sorting order.
 // Version 1.4.2
@@ -62,6 +76,7 @@
 
 (function main() {
   const TITLE_IMAGE_WIDTH = 250; // In pixels. Update this to set your preferred image size.
+  const LAZY_LOAD = true;
 
   const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
   const modernDarkThemeRunning = () => !!document.querySelector('table div.cover');
@@ -85,7 +100,7 @@
           const titleImg = document.createElement('img');
           titleImg.src = imgUrl;
           titleImg.width = TITLE_IMAGE_WIDTH;
-          titleImg.loading = 'lazy';
+          titleImg.loading = LAZY_LOAD ? "lazy" : "eager";
 
           // Replace div with lazy-loaded image.
           imgDiv.remove();
@@ -98,7 +113,7 @@
 
       titles.forEach((title, i) => {
         const titleImg = title.querySelector('img');
-        titleImg.loading = 'lazy';
+        titleImg.loading = LAZY_LOAD ? "lazy" : "eager";
 
         const anchors = window.location.href.search(/requests/) > -1
           ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
@@ -110,6 +125,7 @@
 
         if (imgNode) {
           imgSrc = imgNode.src;
+          
         } else {
           const script = scripts[i];
           if (script) {
@@ -118,13 +134,14 @@
             imgSrc = rawSrc
               .substring(rawSrc.indexOf('=') + 1)
               .replace(/\\"/g, '')
-              .replaceAll('\\/', '/');
+              .replaceAll('\\/', '/')
+              .replaceAll('&brvbar;', '%C2%A6');
           }
         }
 
         if (imgSrc) {
           titleImg.src = imgSrc;
-          titleImg.width = 250;
+          titleImg.width = TITLE_IMAGE_WIDTH;
           // Link image to torrent on the torrents page
           if (!window.location.href.includes('notify')) {
             if (
