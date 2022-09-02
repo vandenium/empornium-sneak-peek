@@ -2,7 +2,7 @@
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
 // @namespace   Empornium Scripts
-// @version     1.4.5
+// @version     1.4.6
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)/torrents.php*/
@@ -22,6 +22,11 @@
 // @include /^https://pornbay\.org/top10\.php.*/
 // @include /^https://pornbay\.org/collages\.php\?.*/
 // @include /^https://pornbay\.org/requests\.php.*/
+// @include /^https://femdomcult\.org/torrents.php*/
+// @exclude /^https://femdomcult\.org/torrents\.php\?id.*/
+// @include /^https://femdomcult\.org/top10.php*/
+// @include /^https://femdomcult\.org/collages\.php\?.*/
+// @include /^https://femdomcult\.org/requests.php*/
 // @include /^https://www.happyfappy\.org/torrents\.php.*/
 // @exclude /^https://www.happyfappy\.org/torrents\.php\?id.*/
 // @include /^https://www.happyfappy\.org/top10\.php.*/
@@ -35,6 +40,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.4.6
+//  - Add femdomcult.org
 // Version 1.4.5
 //  - Bugfix: Fix issue with parsing image links
 //  - Add enthralled.me
@@ -130,7 +137,7 @@
         } else {
           const script = scripts[i];
           if (script) {
-            const regex = window.location.href.search(/pornbay|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
+            const regex = window.location.href.search(/pornbay|femdomcult|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
             const rawSrc = script.firstChild.textContent.match(regex)[0];
             imgSrc = rawSrc
               .substring(rawSrc.indexOf('=') + 1)
