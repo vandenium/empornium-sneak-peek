@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name        Empornium Sneak Peek (ESP)
 // @description Lazy loads title images on title list pages.
+// @icon        data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PgogICAgICAgIDwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgCiAgICAgICAgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+IDxzdmcgc3R5bGU9ImNvbG9yOiB3aGl0ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgY2xhc3M9ImJpIGJpLWV5ZSIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZD0iTTE2IDhzLTMtNS41LTgtNS41UzAgOCAwIDhzMyA1LjUgOCA1LjVTMTYgOCAxNiA4ek0xLjE3MyA4YTEzLjEzMyAxMy4xMzMgMCAwIDEgMS42Ni0yLjA0M0M0LjEyIDQuNjY4IDUuODggMy41IDggMy41YzIuMTIgMCAzLjg3OSAxLjE2OCA1LjE2OCAyLjQ1N0ExMy4xMzMgMTMuMTMzIDAgMCAxIDE0LjgyOCA4Yy0uMDU4LjA4Ny0uMTIyLjE4My0uMTk1LjI4OC0uMzM1LjQ4LS44MyAxLjEyLTEuNDY1IDEuNzU1QzExLjg3OSAxMS4zMzIgMTAuMTE5IDEyLjUgOCAxMi41Yy0yLjEyIDAtMy44NzktMS4xNjgtNS4xNjgtMi40NTdBMTMuMTM0IDEzLjEzNCAwIDAgMSAxLjE3MiA4eiIgZmlsbD0id2hpdGUiPjwvcGF0aD4gPHBhdGggZD0iTTggNS41YTIuNSAyLjUgMCAxIDAgMCA1IDIuNSAyLjUgMCAwIDAgMC01ek00LjUgOGEzLjUgMy41IDAgMSAxIDcgMCAzLjUgMy41IDAgMCAxLTcgMHoiIGZpbGw9IndoaXRlIj48L3BhdGg+IDwvc3ZnPiA=
 // @namespace   Empornium Scripts
-// @version     1.4.6
+// @version     1.4.7
 // @author      vandenium
 // @grant       none
 // @include /^https://www\.empornium\.(me|sx|is)/torrents.php*/
@@ -37,14 +38,24 @@
 // @include /^https://www.homeporntorrents\.club/top10\.php.*/
 // @include /^https://www.homeporntorrents\.club/collages\.php\?.*/
 // @include /^https://www.homeporntorrents\.club/requests\.php.*/
+// @include /^https://kufirc\.com/torrents.php*/
+// @exclude /^https://kufirc\.com/torrents\.php\?id.*/
+// @include /^https://kufirc\.com/top10.php*/
+// @include /^https://kufirc\.com/collages\.php\?.*/
+// @include /^https://kufirc\.com/requests.php*/
+// @include /^https://kufirc\.com/notifications.php*/
 // ==/UserScript==
 
 // Changelog:
+// Version 1.4.7
+//  - Add HQ_IMAGES to switch loading full size images ON/OFF
+//  - Add Kufirc
+//  - Add @icon to script
 // Version 1.4.6
-//  - Add femdomcult.org
+//  - Add femdomcult
 // Version 1.4.5
 //  - Bugfix: Fix issue with parsing image links
-//  - Add enthralled.me
+//  - Add enthralled
 //  - Add @exclude rules
 //  - Add LAZY_LOAD to switch lazy loading ON/OFF
 // Version 1.4.4
@@ -81,17 +92,17 @@
 //  - Fix Brave issue.
 // Version 1.0.0
 //  - The initial version.
-// Todo:
 
 (function main() {
-  const TITLE_IMAGE_WIDTH = 250; // In pixels. Update this to set your preferred image size.
-  const LAZY_LOAD = true;
+  const TITLE_IMAGE_WIDTH = 250;    // Pixels (preferred image size)
+  const HQ_IMAGES = false;          // Bool (obtain full img if possible)
+  const LAZY_LOAD = false;          // Bool (load images when you see them)
 
-  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
   const modernDarkThemeRunning = () => !!document.querySelector('table div.cover');
 
   const run = () => {
-    // If modern dark theme running, replace div with background image with lazy-loaded image.
+    // If modern dark theme running, replace div with background image with lazy-loaded image
     if (modernDarkThemeRunning()) {
       const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
       Array.from(document.querySelectorAll('div.cover')).forEach((el) => (el.style.display = 'none'));
@@ -105,28 +116,28 @@
 
         if (imgArray) {
           const imgUrl = imgArray[0];
-          // create image
+          // Create image
           const titleImg = document.createElement('img');
           titleImg.src = imgUrl;
           titleImg.width = TITLE_IMAGE_WIDTH;
           titleImg.loading = LAZY_LOAD ? 'lazy' : 'eager';
-
-          // Replace div with lazy-loaded image.
+          // Replace div with lazy-loaded image
           imgDiv.remove();
           imgDivParent.append(titleImg);
         }
       });
     } else {
       const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
-      const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])')).filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
+      const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
+          .filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
 
       titles.forEach((title, i) => {
         const titleImg = title.querySelector('img');
         titleImg.loading = LAZY_LOAD ? 'lazy' : 'eager';
 
         const anchors = window.location.href.search(/requests/) > -1
-          ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
-          : title.querySelectorAll('a[href*="torrents.php?id="]');
+            ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
+            : title.querySelectorAll('a[href*="torrents.php?id="]');
         const titleLinkAnchor = anchors[0];
 
         const imgNode = document.querySelector('.leftOverlay img');
@@ -137,26 +148,28 @@
         } else {
           const script = scripts[i];
           if (script) {
-            const regex = window.location.href.search(/pornbay|femdomcult|homeporntorrents/) > -1 ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
+            const regex = window.location.href.search(/pornbay|femdomcult|homeporntorrents/) > -1
+                ? /src=(.*?)(?=>)/: /src=(\\".*\\")/g;
             const rawSrc = script.firstChild.textContent.match(regex)[0];
             imgSrc = rawSrc
-              .substring(rawSrc.indexOf('=') + 1)
-              .replace(/\\"/g, '')
-              .replaceAll('\\/', '/')
-              .replaceAll('&brvbar;', '%C2%A6');
+                .substring(rawSrc.indexOf('=') + 1)
+                .replace(/\\"/g, '')
+                .replaceAll('\\/', '/')
+                .replaceAll('&brvbar;', '%C2%A6');
           }
         }
 
         if (imgSrc) {
+          if (HQ_IMAGES && ['jerking.empornium.ph', 'fapping.empornium.sx'].some(imgHost => imgSrc.includes(imgHost)) ) {
+            imgSrc = imgSrc.replace(/\/resize\/[0-9]+/, "");
+          }
           titleImg.src = imgSrc;
           titleImg.width = TITLE_IMAGE_WIDTH;
           // Link image to torrent on the torrents page
           if (!window.location.href.includes('notify')) {
-            if (
-              titleImg.parentElement.nodeName.toLowerCase() !== 'a'
-              && (typeof titleLinkAnchor).toLowerCase() === 'object'
-              && titleLinkAnchor.href !== undefined
-            ) {
+            if (titleImg.parentElement.nodeName.toLowerCase() !== 'a'
+                && (typeof titleLinkAnchor).toLowerCase() === 'object'
+                && titleLinkAnchor.href !== undefined) {
               // The Image doesn't have an <a>
               const linkElem = document.createElement('a');
               linkElem.setAttribute('href', titleLinkAnchor.href);
