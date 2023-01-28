@@ -3,9 +3,10 @@
 // @description Lazy loads title images on title list pages.
 // @icon        data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PgogICAgICAgIDwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgCiAgICAgICAgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+IDxzdmcgc3R5bGU9ImNvbG9yOiB3aGl0ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgY2xhc3M9ImJpIGJpLWV5ZSIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZD0iTTE2IDhzLTMtNS41LTgtNS41UzAgOCAwIDhzMyA1LjUgOCA1LjVTMTYgOCAxNiA4ek0xLjE3MyA4YTEzLjEzMyAxMy4xMzMgMCAwIDEgMS42Ni0yLjA0M0M0LjEyIDQuNjY4IDUuODggMy41IDggMy41YzIuMTIgMCAzLjg3OSAxLjE2OCA1LjE2OCAyLjQ1N0ExMy4xMzMgMTMuMTMzIDAgMCAxIDE0LjgyOCA4Yy0uMDU4LjA4Ny0uMTIyLjE4My0uMTk1LjI4OC0uMzM1LjQ4LS44MyAxLjEyLTEuNDY1IDEuNzU1QzExLjg3OSAxMS4zMzIgMTAuMTE5IDEyLjUgOCAxMi41Yy0yLjEyIDAtMy44NzktMS4xNjgtNS4xNjgtMi40NTdBMTMuMTM0IDEzLjEzNCAwIDAgMSAxLjE3MiA4eiIgZmlsbD0id2hpdGUiPjwvcGF0aD4gPHBhdGggZD0iTTggNS41YTIuNSAyLjUgMCAxIDAgMCA1IDIuNSAyLjUgMCAwIDAgMC01ek00LjUgOGEzLjUgMy41IDAgMSAxIDcgMCAzLjUgMy41IDAgMCAxLTcgMHoiIGZpbGw9IndoaXRlIj48L3BhdGg+IDwvc3ZnPiA=
 // @namespace   Empornium Scripts
-// @version     1.4.8
+// @version     1.5.0
 // @author      vandenium
-// @grant       none
+// @grant       GM_getValue
+// @grant       GM_setValue
 // @include /^https://www\.empornium\.(me|sx|is)/torrents.php*/
 // @exclude /^https://www\.empornium\.(me|sx|is)/torrents\.php\?id.*/
 // @include /^https://www\.empornium\.(me|sx|is)/top10.php*/
@@ -47,6 +48,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.5.0
+//  - Add settings dialog.
 // Version 1.4.8
 //  - Set LAZY_LOAD to default to true.
 // Version 1.4.7
@@ -96,22 +99,36 @@
 //  - The initial version.
 
 (function main() {
-  const TITLE_IMAGE_WIDTH = 250;    // Pixels (preferred image size)
-  const HQ_IMAGES = false;          // Bool (obtain full img if possible)
-  const LAZY_LOAD = true;          // Bool (load images when you see them)
-
+  const optionsKey = 'esp-options';
   const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
   const modernDarkThemeRunning = () => !!document.querySelector('table div.cover');
 
+  const initialOptions = {
+    TITLE_IMAGE_WIDTH: 250, // Pixels (preferred image size)
+    HQ_IMAGES: true, // Bool (obtain full img if possible)
+    LAZY_LOAD: true, // Bool (load images when you see them)
+  };
+
+  const getOptions = () => {
+    const options = GM_getValue(optionsKey);
+    if (options) {
+      return JSON.parse(options);
+    }
+    return initialOptions;
+  };
+  const setOptions = (options) => {
+    GM_setValue(optionsKey, JSON.stringify(options));
+  };
+
   const run = () => {
+    const options = getOptions();
+
     // If modern dark theme running, replace div with background image with lazy-loaded image
     if (modernDarkThemeRunning()) {
       const titles = Array.from(document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb'));
       Array.from(document.querySelectorAll('div.cover')).forEach((el) => (el.style.display = 'none'));
 
       titles.forEach((title) => {
-        title.querySelector('a.category_label').style.width = '99%';
-
         const imgDiv = title.querySelector('div.cover');
         const imgDivParent = imgDiv.parentNode;
         const imgArray = imgDiv.style.backgroundImage.match(urlRegex);
@@ -121,8 +138,8 @@
           // Create image
           const titleImg = document.createElement('img');
           titleImg.src = imgUrl;
-          titleImg.width = TITLE_IMAGE_WIDTH;
-          titleImg.loading = LAZY_LOAD ? 'lazy' : 'eager';
+          titleImg.width = options.TITLE_IMAGE_WIDTH;
+          titleImg.loading = options.LAZY_LOAD ? 'lazy' : 'eager';
           // Replace div with lazy-loaded image
           imgDiv.remove();
           imgDivParent.append(titleImg);
@@ -131,15 +148,15 @@
     } else {
       const titles = document.querySelectorAll('.torrent, #request_table .rowa, #request_table .rowb');
       const scripts = Array.from(document.querySelectorAll('script:not([src]):not([type])'))
-          .filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
+        .filter((scriptEl) => scriptEl.firstChild.textContent.includes('var overlay'));
 
       titles.forEach((title, i) => {
         const titleImg = title.querySelector('img');
-        titleImg.loading = LAZY_LOAD ? 'lazy' : 'eager';
+        titleImg.loading = options.LAZY_LOAD ? 'lazy' : 'eager';
 
         const anchors = window.location.href.search(/requests/) > -1
-            ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
-            : title.querySelectorAll('a[href*="torrents.php?id="]');
+          ? title.querySelectorAll('a[href*="requests.php?action=view&id="]')
+          : title.querySelectorAll('a[href*="torrents.php?id="]');
         const titleLinkAnchor = anchors[0];
 
         const imgNode = document.querySelector('.leftOverlay img');
@@ -151,22 +168,22 @@
           const script = scripts[i];
           if (script) {
             const regex = window.location.href.search(/pornbay|femdomcult|homeporntorrents/) > -1
-                ? /src=(.*?)(?=>)/: /src=(\\".*\\")/g;
+              ? /src=(.*?)(?=>)/ : /src=(\\".*\\")/g;
             const rawSrc = script.firstChild.textContent.match(regex)[0];
             imgSrc = rawSrc
-                .substring(rawSrc.indexOf('=') + 1)
-                .replace(/\\"/g, '')
-                .replaceAll('\\/', '/')
-                .replaceAll('&brvbar;', '%C2%A6');
+              .substring(rawSrc.indexOf('=') + 1)
+              .replace(/\\"/g, '')
+              .replaceAll('\\/', '/')
+              .replaceAll('&brvbar;', '%C2%A6');
           }
         }
 
         if (imgSrc) {
-          if (HQ_IMAGES && ['jerking.empornium.ph', 'fapping.empornium.sx'].some(imgHost => imgSrc.includes(imgHost)) ) {
-            imgSrc = imgSrc.replace(/\/resize\/[0-9]+/, "");
+          if (options.HQ_IMAGES && ['jerking.empornium.ph', 'fapping.empornium.sx'].some((imgHost) => imgSrc.includes(imgHost))) {
+            imgSrc = imgSrc.replace(/\/resize\/[0-9]+/, '');
           }
           titleImg.src = imgSrc;
-          titleImg.width = TITLE_IMAGE_WIDTH;
+          titleImg.width = options.TITLE_IMAGE_WIDTH;
           // Link image to torrent on the torrents page
           if (!window.location.href.includes('notify')) {
             if (titleImg.parentElement.nodeName.toLowerCase() !== 'a'
@@ -186,5 +203,125 @@
     }
   };
 
+  const template = `
+   <style>
+    #esp-options-outer-container {
+     position: absolute;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     z-index: 100;
+     top: 50%;
+     width: 430px;
+     border: solid #333 1px;
+     background-color: rgb(0,0,0,0.9);
+     border-radius: 15px;
+     padding: 10px;
+   }
+   
+   .esp-settings-content input {
+    margin-bottom: 5px;
+   }
+   
+    #esp-save-settings {
+      margin-top: 10px;
+    }
+   
+    #close-esp-settings a {
+      float: right;
+      margin: 0px 3px 0 0;
+      text-decoration:none;
+      border-radius: 10px;
+      font-size: 1.5em;
+    }
+   
+    #close-esp-settings a:hover {
+      background-color: rgba(100,100,10,0.9);
+    }
+   </style>
+
+   <div class='esp-settings-title'>
+   <div id='close-esp-settings'><a href='#'>✖️</a></div>
+     <h1>Empornium Sneak Peak Settings</h1>
+   </div>
+
+   <div class='esp-settings-content'>
+    <div>
+      <span>Image Width:</span> <input type='text' size=12 maxlength=3 id='esp-option-image-width' placeholder='Image width (px)'> px<br/>
+      <input type='checkbox' id='esp-option-hq-images'>
+      <label>Use High Quality Images</label><br>
+      <input type='checkbox' id='esp-option-lazy-load'>
+      <label>Lazy Load Images</label>
+    </div>
+      
+    <p><b>High Quality Images</b>: Loads high quality images, if available. HQ images are larger so may see slower image load times.</p>
+    <p><b>Lazy Load Images</b>: Images are not loaded until you scroll near them. Faster overall page load times.</p>
+
+    <button id='esp-save-settings'>Save Settings</button>
+  </div>
+   `;
+
+  const hideSettings = () => document.querySelector('#esp-options-outer-container').remove();
+
+  const showSettings = () => {
+    const createTemplateDOM = (str) => {
+      const container = document.createElement('div');
+      container.id = 'esp-options-outer-container';
+      container.innerHTML = str;
+      return container;
+    };
+
+    const dom = createTemplateDOM(template);
+
+    // Get settings
+    const options = getOptions();
+    dom.querySelector('#esp-option-image-width').value = options.TITLE_IMAGE_WIDTH;
+    dom.querySelector('#esp-option-hq-images').checked = options.HQ_IMAGES;
+    dom.querySelector('#esp-option-lazy-load').checked = options.LAZY_LOAD;
+
+    // Save settings
+    dom.querySelector('#esp-save-settings').addEventListener('click', () => {
+      const settingImageWidthRaw = dom.querySelector('#esp-option-image-width').value.trim();
+      const settingHqImages = dom.querySelector('#esp-option-hq-images').checked;
+      const settingLazyLoad = dom.querySelector('#esp-option-lazy-load').checked;
+      const settingsImageWidthNumber = Number.parseInt(settingImageWidthRaw, 10);
+      const newOptions = {
+        HQ_IMAGES: settingHqImages,
+        LAZY_LOAD: settingLazyLoad,
+        TITLE_IMAGE_WIDTH: Number.isInteger(
+          settingsImageWidthNumber,
+        ) ? settingsImageWidthNumber : initialOptions.TITLE_IMAGE_WIDTH,
+      };
+
+      setOptions(newOptions);
+      hideSettings();
+      window.location.reload();
+    });
+
+    // Close settings
+    dom.querySelector('#close-esp-settings a').addEventListener('click', hideSettings);
+
+    // Add to document.
+    const body = document.querySelector('body');
+    body.appendChild(dom);
+  };
+
+  // Add settings link to page.
+  const addSettingsLink = () => {
+    const ul = document.createElement('ul');
+    const li = document.createElement('li');
+    ul.append(li);
+    ul.style.display = 'inline-block';
+
+    const a = document.createElement('a');
+    a.href = '#';
+    a.textContent = 'ESP';
+    a.addEventListener('click', showSettings);
+    li.appendChild(a);
+    const container = document.querySelector('#major_stats');
+    container.prepend(ul);
+  };
+
+  // Settings link
+  addSettingsLink();
   run();
 }());
