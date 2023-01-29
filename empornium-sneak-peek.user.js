@@ -3,7 +3,7 @@
 // @description Lazy loads title images on title list pages.
 // @icon        data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PgogICAgICAgIDwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgCiAgICAgICAgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+IDxzdmcgc3R5bGU9ImNvbG9yOiB3aGl0ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9ImN1cnJlbnRDb2xvciIgY2xhc3M9ImJpIGJpLWV5ZSIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZD0iTTE2IDhzLTMtNS41LTgtNS41UzAgOCAwIDhzMyA1LjUgOCA1LjVTMTYgOCAxNiA4ek0xLjE3MyA4YTEzLjEzMyAxMy4xMzMgMCAwIDEgMS42Ni0yLjA0M0M0LjEyIDQuNjY4IDUuODggMy41IDggMy41YzIuMTIgMCAzLjg3OSAxLjE2OCA1LjE2OCAyLjQ1N0ExMy4xMzMgMTMuMTMzIDAgMCAxIDE0LjgyOCA4Yy0uMDU4LjA4Ny0uMTIyLjE4My0uMTk1LjI4OC0uMzM1LjQ4LS44MyAxLjEyLTEuNDY1IDEuNzU1QzExLjg3OSAxMS4zMzIgMTAuMTE5IDEyLjUgOCAxMi41Yy0yLjEyIDAtMy44NzktMS4xNjgtNS4xNjgtMi40NTdBMTMuMTM0IDEzLjEzNCAwIDAgMSAxLjE3MiA4eiIgZmlsbD0id2hpdGUiPjwvcGF0aD4gPHBhdGggZD0iTTggNS41YTIuNSAyLjUgMCAxIDAgMCA1IDIuNSAyLjUgMCAwIDAgMC01ek00LjUgOGEzLjUgMy41IDAgMSAxIDcgMCAzLjUgMy41IDAgMCAxLTcgMHoiIGZpbGw9IndoaXRlIj48L3BhdGg+IDwvc3ZnPiA=
 // @namespace   Empornium Scripts
-// @version     1.5.0
+// @version     1.5.1
 // @author      vandenium
 // @grant       GM_getValue
 // @grant       GM_setValue
@@ -48,6 +48,8 @@
 // ==/UserScript==
 
 // Changelog:
+// Version 1.5.1
+//  - Set text color.
 // Version 1.5.0
 //  - Add settings dialog.
 // Version 1.4.8
@@ -206,6 +208,7 @@
   const template = `
    <style>
     #esp-options-outer-container {
+     color: #ccc;
      position: absolute;
      left: 50%;
      transform: translate(-50%, -50%);
